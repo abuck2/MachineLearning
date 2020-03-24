@@ -1,5 +1,15 @@
 from ClassificationReport import ClassificationReport
+import numpy as np
 import tokenization
+import tensorflow as tf
+import tensorflow_hub as hub
+from tensorflow import keras
+from tensorflow.keras.optimizers import SGD, Adam
+from tensorflow.keras.layers import Dense, Input, Dropout, GlobalAveragePooling1D
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, Callback
+
+
 
 class DisasterDetector:
     
@@ -64,6 +74,7 @@ class DisasterDetector:
     
     
     def train(self, X, skf):
+        
         
         for fold, (trn_idx, val_idx) in enumerate(skf.split(X['text_cleaned'], X['keyword'])):
             

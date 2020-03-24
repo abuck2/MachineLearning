@@ -159,6 +159,11 @@ class DisasterTweets:
         This function builds new features from the text
         """
 
+        #missing data 
+        for df in [self.df_train, self.df_test]:
+            for col in ['keyword', 'location']:
+                df[col] = df[col].fillna(f'no_{col}')
+
         # word_count
         self.df_train['word_count'] = self.df_train['text'].apply(lambda x: len(str(x).split()))
         self.df_test['word_count'] = self.df_test['text'].apply(lambda x: len(str(x).split()))
@@ -369,7 +374,13 @@ class DisasterTweets:
         clf = DisasterDetector(bert_layer, max_seq_length=128, lr=0.0001, epochs=10, batch_size=32)
 
         clf.train(self.df_train, self.skf)
-        
+       
+        y_pred = clf.predict(df_test)
+
+        model_submission = pd.read_csv("/kaggle/input/nlp-getting-started/sample_submission.csv")
+        model_submission['target'] = np.round(y_pred).astype('int')
+        model_submission.to_csv('model_submission.csv', index=False)
+        model_submission.describe()
 
     def run(self):
         self.open_data()
@@ -385,7 +396,7 @@ class DisasterTweets:
 
 if __name__ == "__main__":
     filepath = "/home/alexis/python_files/twitter/"
-    predictor = DisasterTweets(filepath, explore = False, preparation = True)
+    predictor = DisasterTweets(filepath, explore = False, preparation = False)
     predictor.run()
 
 
